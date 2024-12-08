@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思い出のアルバム</title>
+    <style>
+        /* 基本スタイル */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background-color: #0078d7;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .album-container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 思い出アイテムのスタイル */
+        .memory-item {
+            display: flex;
+            gap: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .memory-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: scale(1.02);
+        }
+
+        .memory-media {
+            flex: 1;
+            max-width: 55%;
+        }
+
+        .memory-media img,
+        .memory-media video {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .memory-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .memory-content .date {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .memory-content h2 {
+            font-size: 1.5rem;
+            margin: 0 0 10px;
+            color: #0078d7;
+        }
+
+        .memory-content p {
+            font-size: 1rem;
+            margin: 0;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* ボタンの基本スタイル */
+    button {
+        background-color: #0078d7;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        margin: 10px 0;
+    }
+
+    /* ホバー時のエフェクト */
+    button:hover {
+        background-color: #005bb5;
+        transform: scale(1.05);
+    }
+
+    /* アクティブ時のスタイル */
+    button:active {
+        transform: scale(0.95);
+        background-color: #004a93;
+    }
+
+    /* ボタンの配置用 */
+    .button-container {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    /* モバイル対応 */
+    @media (max-width: 768px) {
+        button {
+            width: 100%; /* モバイルではボタンを横いっぱいに */
+        }
+    }
+
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            .memory-item {
+                flex-direction: column;
+            }
+
+            .memory-media {
+                max-width: 100%;
+            }
+
+            .memory-content {
+                padding: 15px;
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #0078d7;
+            color: white;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header>
+    <h1>{{ year }}年{{ month }}月{{ day }}日の思い出</h1>
+</header>
+
+<!-- 思い出を追加するボタン -->
+<div class="button-container">
+    <a href="{% url 'memory_add' %}">
+        <button>思い出を追加</button>
+    </a>
+</div>
+
+<!-- エラーメッセージを表示 -->
+{% if messages %}
+    <ul>
+        {% for message in messages %}
+             <li style="color: red;">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<!-- アルバムコンテナ -->
+<div class="album-container">
+    <!-- 思い出のアイテム -->
+    {% for memory in memories %}
+    <div class="memory-item">
+        <!-- メディア部分 -->
+        <div class="memory-media">
+            {% if memory.photo %}
+            <img src="{{ memory.photo.url }}" alt="写真">
+            {% elif memory.video %}
+            <video controls>
+                <source src="{{ memory.video.url }}" type="video/mp4">
+                お使いのブラウザは動画をサポートしていません。
+            </video>
+            {% endif %}
+        </div>
+        <!-- テキスト部分 -->
+        <div class="memory-content">
+            <div class="date">{{ memory.date }}</div> 
+        <!-- 日付表示 -->
+            <h2>{{ memory.title }}</h2>
+            <p>{{ memory.description }}</p>
+            {% if memory.location %}
+                <p>📍{{ memory.location }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- 戻るボタン -->
+<div class="button-container">
+    <a href="{% url 'memory_list' %}">
+        <button>戻る</button>
+    </a>
+</div>
+
+<!-- フッター -->
+<footer>
+    &copy; ひびろぐ
+</footer>
+
+</body>
+</html>
